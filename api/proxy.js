@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Allow all origins — personal use proxy
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', '*');
@@ -30,6 +29,14 @@ export default async function handler(req, res) {
     'query1.finance.yahoo.com',
     'query2.finance.yahoo.com',
     'finance.yahoo.com',
+    'www.tsn.ca',
+    'tsn.ca',
+    'www.sportsnet.ca',
+    'sportsnet.ca',
+    'rss.cbssports.com',
+    'sportsnaut.com',
+    'www.nhl.com',
+    'nhl.com',
   ];
  
   let parsedUrl;
@@ -48,14 +55,10 @@ export default async function handler(req, res) {
  
   try {
     const headers = {
-      'Accept': 'application/json',
+      'Accept': 'application/json, text/plain, */*',
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept-Language': 'en-US,en;q=0.9',
     };
- 
-    if (hostname.includes('reddit.com')) {
-      headers['Accept-Language'] = 'en-US,en;q=0.9';
-      headers['Cache-Control'] = 'no-cache';
-    }
  
     if (req.headers.authorization) {
       headers['Authorization'] = req.headers.authorization;
@@ -85,3 +88,4 @@ export default async function handler(req, res) {
     });
   }
 }
+ 
