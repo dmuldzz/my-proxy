@@ -8,7 +8,6 @@ export default async function handler(req, res) {
   }
  
   const targetUrl = req.query.url;
- 
   if (!targetUrl) {
     return res.status(400).json({ error: 'Missing ?url= parameter' });
   }
@@ -19,6 +18,9 @@ export default async function handler(req, res) {
     'suggest.svc.nhl.com',
     'records.nhl.com',
     'stats.nhl.com',
+    'site.api.espn.com',
+    'rss.cbssports.com',
+    'sportsnaut.com',
     'api.coingecko.com',
     'finnhub.io',
     'api.alternative.me',
@@ -33,8 +35,6 @@ export default async function handler(req, res) {
     'tsn.ca',
     'www.sportsnet.ca',
     'sportsnet.ca',
-    'rss.cbssports.com',
-    'sportsnaut.com',
     'www.nhl.com',
     'nhl.com',
   ];
@@ -48,7 +48,6 @@ export default async function handler(req, res) {
  
   const hostname = parsedUrl.hostname;
   const isAllowed = allowedDomains.some(d => hostname === d || hostname.endsWith('.' + d));
- 
   if (!isAllowed) {
     return res.status(403).json({ error: 'Domain not allowed: ' + hostname });
   }
@@ -88,4 +87,3 @@ export default async function handler(req, res) {
     });
   }
 }
- 
