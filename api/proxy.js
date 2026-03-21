@@ -37,6 +37,10 @@ export default async function handler(req, res) {
     'sportsnet.ca',
     'www.nhl.com',
     'nhl.com',
+    'sports.yahoo.com',
+    'nhlrumors.com',
+    'thehockeywriters.com',
+    'www.dailyfaceoff.com',
   ];
  
   let parsedUrl;
