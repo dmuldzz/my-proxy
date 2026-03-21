@@ -41,6 +41,7 @@ export default async function handler(req, res) {
     'nhlrumors.com',
     'thehockeywriters.com',
     'www.dailyfaceoff.com',
+    'www.prohockeyrumors.com',
   ];
  
   let parsedUrl;
@@ -91,4 +92,3 @@ export default async function handler(req, res) {
     });
   }
 }
- 
