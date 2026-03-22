@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, anthropic-version, Accept');
  
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -66,10 +66,13 @@ export default async function handler(req, res) {
       'Accept-Language': 'en-US,en;q=0.9',
     };
  
-    // Forward auth and custom headers (needed for Anthropic)
-    const forwardHeaders = ['authorization', 'x-api-key', 'anthropic-version', 'content-type'];
-    for (const h of forwardHeaders) {
-      if (req.headers[h]) headers[h] = req.headers[h];
+    // Forward content-type from browser
+    if (req.headers['content-type']) headers['content-type'] = req.headers['content-type'];
+ 
+    // Inject Anthropic headers server-side (avoids CORS preflight issues)
+    if (hostname === 'api.anthropic.com') {
+      headers['x-api-key'] = '';
+      headers['anthropic-version'] = '2023-06-01';
     }
  
     const fetchOptions = { headers, redirect: 'follow', method: req.method };
