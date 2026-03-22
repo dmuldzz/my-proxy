@@ -1,3 +1,4 @@
+// Proxy v3 — updated 2026-03-22 05:09:47 — do not remove this line
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -105,4 +106,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Proxy fetch failed', message: error.message });
   }
 }
- 
