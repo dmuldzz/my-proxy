@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', '*');
  
   if (req.method === 'OPTIONS') {
@@ -42,6 +42,8 @@ export default async function handler(req, res) {
     'thehockeywriters.com',
     'www.dailyfaceoff.com',
     'www.prohockeyrumors.com',
+    'financialmodelingprep.com',
+    'api.anthropic.com',
   ];
  
   let parsedUrl;
@@ -60,21 +62,32 @@ export default async function handler(req, res) {
   try {
     const headers = {
       'Accept': 'application/json, text/plain, */*',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       'Accept-Language': 'en-US,en;q=0.9',
     };
  
-    if (req.headers.authorization) {
-      headers['Authorization'] = req.headers.authorization;
+    // Forward auth and custom headers (needed for Anthropic)
+    const forwardHeaders = ['authorization', 'x-api-key', 'anthropic-version', 'content-type'];
+    for (const h of forwardHeaders) {
+      if (req.headers[h]) headers[h] = req.headers[h];
     }
  
-    const response = await fetch(targetUrl, { headers, redirect: 'follow' });
+    const fetchOptions = { headers, redirect: 'follow', method: req.method };
+ 
+    // Forward body for POST requests
+    if (req.method === 'POST' && req.body) {
+      fetchOptions.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+      if (!headers['content-type']) headers['content-type'] = 'application/json';
+    }
+ 
+    const response = await fetch(targetUrl, fetchOptions);
  
     if (!response.ok) {
+      const errText = await response.text();
       return res.status(response.status).json({
         error: 'Upstream error',
         status: response.status,
-        url: targetUrl,
+        detail: errText.substring(0, 200),
       });
     }
  
@@ -82,13 +95,11 @@ export default async function handler(req, res) {
     const data = await response.text();
  
     res.setHeader('Content-Type', contentType);
-    res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
+    res.setHeader('Cache-Control', 'no-store');
     return res.status(200).send(data);
  
   } catch (error) {
-    return res.status(500).json({
-      error: 'Proxy fetch failed',
-      message: error.message,
-    });
+    return res.status(500).json({ error: 'Proxy fetch failed', message: error.message });
   }
 }
+ 
