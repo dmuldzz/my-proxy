@@ -1,4 +1,4 @@
-// Proxy v3 — updated 2026-03-22 05:09:47 — do not remove this line
+// Proxy v4 — updated 2026-03-31 — news & rumours sources expanded
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -14,37 +14,61 @@ export default async function handler(req, res) {
   }
  
   const allowedDomains = [
+    // NHL APIs
     'api-web.nhle.com',
     'api.nhle.com',
     'suggest.svc.nhl.com',
     'records.nhl.com',
     'stats.nhl.com',
+    'www.nhl.com',
+    'nhl.com',
+ 
+    // Sports data
     'site.api.espn.com',
-    'rss.cbssports.com',
-    'sportsnaut.com',
+    'api.mysportsfeeds.com',
+    'financialmodelingprep.com',
+ 
+    // Finance / misc
     'api.coingecko.com',
     'finnhub.io',
     'api.alternative.me',
-    'api.mysportsfeeds.com',
-    'www.reddit.com',
-    'reddit.com',
-    'api.rss2json.com',
     'query1.finance.yahoo.com',
     'query2.finance.yahoo.com',
     'finance.yahoo.com',
-    'www.tsn.ca',
-    'tsn.ca',
-    'www.sportsnet.ca',
-    'sportsnet.ca',
-    'www.nhl.com',
-    'nhl.com',
     'sports.yahoo.com',
-    'nhlrumors.com',
-    'thehockeywriters.com',
-    'www.dailyfaceoff.com',
-    'www.prohockeyrumors.com',
-    'financialmodelingprep.com',
+ 
+    // Anthropic
     'api.anthropic.com',
+ 
+    // -----------------------------------------------
+    // NEWS SOURCES (4 feeds)
+    // -----------------------------------------------
+    'thehockeywriters.com',         // Hockey Writers — general NHL news
+    'prohockeynews.com',            // Pro Hockey News — broad coverage
+    'www.sportsnet.ca',             // Sportsnet — Canadian insiders
+    'sportsnet.ca',
+    'www.tsn.ca',                   // TSN — Canadian insiders
+    'tsn.ca',
+ 
+    // -----------------------------------------------
+    // RUMOUR SOURCES (6 feeds)
+    // -----------------------------------------------
+    'www.prohockeyrumors.com',      // Pro Hockey Rumors — primary rumour source
+    'nhlrumors.com',                // NHL Rumors — trade/injury rumours
+    'www.spectorshockey.net',       // Spector's Hockey — daily rumour roundup
+    'www.hockeybuzz.com',           // Hockey Buzz — insider rumours
+    'feeds.feedburner.com',         // Kukla's Korner (via FeedBurner)
+    'www.nhltraderumor.com',        // NHL Trade Rumor — active rumour site
+ 
+    // -----------------------------------------------
+    // PREVIOUSLY EXISTING — kept for other features
+    // -----------------------------------------------
+    'rss.cbssports.com',
+    'sportsnaut.com',
+    'www.reddit.com',
+    'reddit.com',
+    'api.rss2json.com',
+    'www.dailyfaceoff.com',
   ];
  
   let parsedUrl;
@@ -67,7 +91,6 @@ export default async function handler(req, res) {
       'Accept-Language': 'en-US,en;q=0.9',
     };
  
-    // Forward content-type from browser
     if (req.headers['content-type']) headers['content-type'] = req.headers['content-type'];
  
     // Inject Anthropic headers server-side (avoids CORS preflight issues)
@@ -78,7 +101,6 @@ export default async function handler(req, res) {
  
     const fetchOptions = { headers, redirect: 'follow', method: req.method };
  
-    // Forward body for POST requests
     if (req.method === 'POST' && req.body) {
       fetchOptions.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
       if (!headers['content-type']) headers['content-type'] = 'application/json';
@@ -105,5 +127,3 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(500).json({ error: 'Proxy fetch failed', message: error.message });
   }
-}
- 
